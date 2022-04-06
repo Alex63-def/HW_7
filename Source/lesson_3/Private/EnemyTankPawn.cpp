@@ -9,6 +9,8 @@ AEnemyTankPawn::AEnemyTankPawn()/* : ATankPawn()*/
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	DeathMaterial = CreateDefaultSubobject<UMaterial>(TEXT("DeathMaterial"));
+
 	RangeSphere = CreateDefaultSubobject<USphereComponent>("RangeSphere");
 	RangeSphere->SetupAttachment(RootComponent);
 
@@ -24,6 +26,12 @@ AEnemyTankPawn::AEnemyTankPawn()/* : ATankPawn()*/
 
 	DeathEffectt = CreateDefaultSubobject<UParticleSystemComponent>("DeathEffectt");
 	DeathEffectt->SetupAttachment(BodyMesh);
+
+	AudioEffect_FlameDeath = CreateDefaultSubobject<UAudioComponent>("AudioEffect_FlameDeath");
+	AudioEffect_FlameDeath->SetupAttachment(BodyMesh);
+
+	DeathEffect_Flame = CreateDefaultSubobject<UParticleSystemComponent>("DeathEffect_Flame");
+	DeathEffect_Flame->SetupAttachment(BodyMesh);
 }
 
 void AEnemyTankPawn::OnConstrution(const FTransform& Transform)
@@ -57,14 +65,35 @@ void AEnemyTankPawn::OnHealthChanged(float CurrentHealthTank)
 
 void AEnemyTankPawn::OnDeath()
 {
-	auto Temp = GetActorLocation();
+	/*auto Temp = GetActorLocation();
 	AudioDeathEffectt->Play();
 	DeathEffectt->ActivateSystem();
 	SetActorLocation({ -1000, -1000, -1000 });
 	DeathEffectt->SetWorldLocation(Temp);
-	AudioDeathEffectt->SetWorldLocation(Temp);
+	AudioDeathEffectt->SetWorldLocation(Temp);*/
 
-	GetWorld()->GetTimerManager().SetTimer(TimerDestruction, this, &AEnemyTankPawn::SelfDestruction, 3, false);
+	HealthComponent->OnDeath.Clear();
+
+	bDeath = true;
+	
+	TurretMesh->DestroyComponent();
+	CannonPosition->DestroyComponent();
+	//CannonTracePosition->DestroyComponent();
+	//CannonFlamePosition1->DestroyComponent();
+	TraceCannon->Destroy();
+	FlameCannon1->Destroy();
+	FlameCannon2->Destroy();
+	//CannonFlamePosition2->DestroyComponent();
+	RangeSphere->DestroyComponent();
+
+	BodyMesh->SetMaterial(0, DeathMaterial);
+	
+	AudioDeathEffectt->Play();
+	DeathEffectt->ActivateSystem();
+	AudioEffect_FlameDeath->Play();
+	DeathEffect_Flame->ActivateSystem();
+
+	GetWorld()->GetTimerManager().SetTimer(TimerDestruction, this, &AEnemyTankPawn::SelfDestruction, 20, false);
 }
 
 void AEnemyTankPawn::SelfDestruction()

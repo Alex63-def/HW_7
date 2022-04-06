@@ -23,6 +23,12 @@ public:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UAudioComponent* AudioDeathEffectt;
 
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UAudioComponent* AudioEffect_FlameDeath;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UParticleSystemComponent* DeathEffect_Flame;
+
 	//набор вейпоинтов когда аи контроллер дойдет до фун possess то он запомнит их для себя
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI|Move")
 		TArray<ATargetPoint*> Waypoints;
@@ -34,6 +40,8 @@ public:
 
 	// это для примера, ни на что не влияет
 	int Number = -1;
+
+	bool bDeath = false;
 
 private:
 

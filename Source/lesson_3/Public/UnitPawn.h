@@ -27,6 +27,10 @@ public:
 	// Sets default values for this pawn's properties
 	AUnitPawn();
 
+	// при смерти меняет material
+	UPROPERTY(EditAnywhere)
+		class UMaterial* DeathMaterial;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
 		USphereComponent* RangeSphere;
 

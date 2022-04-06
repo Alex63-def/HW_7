@@ -101,6 +101,8 @@ void ABaseFactory::OnDeath()
 {
 	//Destroy();
 
+	HealthComponent->OnDeath.Clear();
+
 	bDeath = true;
 	AudioEffect_1->Stop();
 	AudioEffect_2->Play();

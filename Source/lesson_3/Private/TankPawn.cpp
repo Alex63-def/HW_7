@@ -294,10 +294,6 @@ void ATankPawn::ShootTrace()
 
 void ATankPawn::FlameShoot(float Value)
 {
-	
-	
-	
-	
 	if (FlameCannon1 && FlameCannon2)
 	{
 		if (bOverheat)
@@ -341,6 +337,8 @@ void ATankPawn::StopSoundFlame()
 	{
 			FlameCannon1->StopSoundFlame();
 			FlameCannon2->StopSoundFlame();
+
+			Overheat = TempOverheat;
 	}
 }
 
@@ -441,8 +439,8 @@ void ATankPawn::MoveTank(float DeltaTime)
 
 void ATankPawn::RotationTank(float DeltaTime)
 {
-	if (Energy > 0)
-	{
+	/*if (Energy > 0)
+	{*/
 		if (!FMath::IsNearlyEqual(MoveSForwardScaleTarget, 0.0f) || !FMath::IsNearlyEqual(MoveRightScaleTarget, 0.0f) || !FMath::IsNearlyEqual(RotationRightScaleTarget, 0.0f))
 		{
 			AudioEffectMove_1->Stop();
@@ -458,19 +456,30 @@ void ATankPawn::RotationTank(float DeltaTime)
 
 		RotationRightScaleCurrent = FMath::Lerp(RotationRightScaleCurrent, RotationRightScaleTarget, RotationAcceleration);
 
+		if (Energy == 0)
+		{
+			RotationSpeed = FMath::Lerp(RotationSpeed, 0.f, MovementAcceleration);
+		}
+
 		auto Rotation = GetActorRotation();
 
-		Rotation.Yaw += RotationRightScaleCurrent * RotationSpeed * DeltaTime;
+		//Rotation.Yaw += RotationRightScaleCurrent * RotationSpeed * DeltaTime;
+
+		if (lastPushForward)
+			Rotation.Yaw += RotationRightScaleCurrent * RotationSpeed * lastPushForward * DeltaTime;
+		else
+			Rotation.Yaw += RotationRightScaleCurrent * RotationSpeed * DeltaTime;
+
 
 		SetActorRotation(Rotation);
 
 		//UE_LOG(LogTanks, Warning, TEXT("%s"), *Rotation.ToString());
-	}
+	//}
 }
 
 void ATankPawn::RotationCannon(float DeltaTime)
 {
-	if (Energy > 0)
+	if (Energy > 0 && TurretMesh)
 	{
 		if (!TargetController)
 			return;

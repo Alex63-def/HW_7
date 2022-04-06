@@ -14,6 +14,8 @@ ATurret::ATurret()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
+	DeathMaterial = CreateDefaultSubobject<UMaterial>(TEXT("DeathMaterial"));
+
 	Collision = CreateDefaultSubobject<UCapsuleComponent>("Collision");
 	RootComponent = Collision;
 
@@ -55,6 +57,12 @@ ATurret::ATurret()
 
 	AudioEffectStopRotateTurret = CreateDefaultSubobject<UAudioComponent>("AudioEffectStopRotateTurret");
 	AudioEffectStopRotateTurret->SetupAttachment(TurretMesh);
+
+	AudioEffect_FlameDeath = CreateDefaultSubobject<UAudioComponent>("AudioEffect_FlameDeath");
+	AudioEffect_FlameDeath->SetupAttachment(BodyMesh);
+
+	DeathEffect_Flame = CreateDefaultSubobject<UParticleSystemComponent>("DeathEffect_Flame");
+	DeathEffect_Flame->SetupAttachment(BodyMesh);
 }
 
 // Called when the game starts or when spawned
@@ -271,14 +279,28 @@ void ATurret::Fire()
 
 void ATurret::OnDeath()
 {
-	auto Temp = GetActorLocation();
+	// это я телепортироал в другое место
+	/*auto Temp = GetActorLocation();
 	AudioDeathEffect->Play();
 	DeathEffect->ActivateSystem();
 	SetActorLocation({ -1000, -1000, -1000 });
 	DeathEffect->SetWorldLocation(Temp);
-	AudioDeathEffect->SetWorldLocation(Temp);
+	AudioDeathEffect->SetWorldLocation(Temp);*/
+
+	HealthComponent->OnDeath.Clear();
+
+	TurretMesh->DestroyComponent();
+	CannonPosition->DestroyComponent();
+	RangeSphere->DestroyComponent();
 	
-	GetWorld()->GetTimerManager().SetTimer(TimerDestruction, this, &ATurret::SelfDestruction, 3, false);	
+	BodyMesh->SetMaterial(0, DeathMaterial);
+
+	AudioDeathEffect->Play();
+	DeathEffect->ActivateSystem();
+	AudioEffect_FlameDeath->Play();
+	DeathEffect_Flame->ActivateSystem();
+
+	GetWorld()->GetTimerManager().SetTimer(TimerDestruction, this, &ATurret::SelfDestruction, 20, false);	
 }
 
 void ATurret::OnHealthChanged(float CurrentHealthTurret)

@@ -18,8 +18,10 @@ void AEnemyAIController::Tick(float DeltaTime)
 	}*/
 
 	// заставим наш танк двигаться 
-	if (!TankPawn)
+	if (!TankPawn || TankPawn->bDeath)
 	{
+		TankPawn->MoveForward(0);
+		TankPawn->RotationRight(0);
 		return;
 	}
 
