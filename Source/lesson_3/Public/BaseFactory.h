@@ -23,6 +23,13 @@ public:
 	// Sets default values for this actor's properties
 	ABaseFactory();
 
+	// при смерти меняет меш
+	UStaticMesh* Asset;
+
+	// при смерти меняет material
+	UPROPERTY(EditAnywhere)
+		class UMaterial* DeathMaterial;
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UStaticMeshComponent* BuildingMesh;
 
@@ -42,6 +49,21 @@ public:
 	// это то что будет спавниться 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Factory")
 		TSubclassOf<AEnemyTankPawn> TankClass;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UAudioComponent* AudioEffect_1;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UAudioComponent* AudioEffect_2;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UAudioComponent* AudioEffect_3;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UParticleSystemComponent* DeathEffect_1;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UParticleSystemComponent* DeathEffect_2;
 
 	// это сколько раз спавнить
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Factory")
@@ -74,10 +96,14 @@ private:
 	// спавнит 
 	void OnTankSpawnTick();
 
+	void SelfDestruction();
+
 	// это для примера сколько танков спавнилось
 	int TanksSpawned = 0;
 
 	FTimerHandle Timer;
+
+	bool bDeath = false;
 
 public:
 

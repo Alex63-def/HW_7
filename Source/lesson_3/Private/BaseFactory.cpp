@@ -10,6 +10,11 @@ ABaseFactory::ABaseFactory()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>MeshAsset(TEXT("StaticMesh'/Game/CSC/Meshes/SM_TANK_Base1.SM_TANK_Base1'"));
+	Asset = MeshAsset.Object;
+
+	DeathMaterial = CreateDefaultSubobject<UMaterial>(TEXT("DeathMaterial"));
+
 	// рут сделали по умолчанию
 	RootComponent = CreateDefaultSubobject<USceneComponent>("DefaultRoot");
 
@@ -25,6 +30,21 @@ ABaseFactory::ABaseFactory()
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>("HealthComponent");
 	HealthComponent->OnHealthChanged.AddUObject(this, &ABaseFactory::OnHealthChanged);
 	HealthComponent->OnDeath.AddUObject(this, &ABaseFactory::OnDeath);
+
+	AudioEffect_1 = CreateDefaultSubobject<UAudioComponent>("AudioEffect_1");
+	AudioEffect_1->SetupAttachment(BuildingMesh);
+
+	AudioEffect_2 = CreateDefaultSubobject<UAudioComponent>("AudioEffect_2");
+	AudioEffect_2->SetupAttachment(BuildingMesh);
+
+	AudioEffect_3 = CreateDefaultSubobject<UAudioComponent>("AudioEffect_3");
+	AudioEffect_3->SetupAttachment(BuildingMesh);
+
+	DeathEffect_1 = CreateDefaultSubobject<UParticleSystemComponent>("DeathEffect_1");
+	DeathEffect_1->SetupAttachment(BuildingMesh);
+
+	DeathEffect_2 = CreateDefaultSubobject<UParticleSystemComponent>("DeathEffect_2");
+	DeathEffect_2->SetupAttachment(BuildingMesh);
 }
 
 // Called when the game starts or when spawned
@@ -34,6 +54,7 @@ void ABaseFactory::BeginPlay()
 
 	// создаем таймер для спавна
 	GetWorldTimerManager().SetTimer(Timer, this, &ABaseFactory::OnTankSpawnTick, SpawnInterval, true);
+
 }
 
 // Called every frame
@@ -41,6 +62,8 @@ void ABaseFactory::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!AudioEffect_1->IsActive() && !bDeath)
+		AudioEffect_1->Play();
 }
 
 void ABaseFactory::TakeDamage(FDamageData Damage)
@@ -76,16 +99,31 @@ void ABaseFactory::OnHealthChanged(float CurrentHealthFactory)
 
 void ABaseFactory::OnDeath()
 {
-	/*auto Temp = GetActorLocation();
-	AudioDeathEffect->Play();
-	DeathEffect->ActivateSystem();
-	SetActorLocation({ -1000, -1000, -1000 });
-	DeathEffect->SetWorldLocation(Temp);
-	AudioDeathEffect->SetWorldLocation(Temp);
+	//Destroy();
 
-	GetWorld()->GetTimerManager().SetTimer(TimerDestruction, this, &ATurret::SelfDestruction, 3, false);*/
+	bDeath = true;
+	AudioEffect_1->Stop();
+	AudioEffect_2->Play();
+	AudioEffect_3->Play();
 
-	Destroy();
+	DeathEffect_1->ActivateSystem();
+	DeathEffect_2->ActivateSystem();
+	
+	auto Temp = BuildingMesh->GetComponentTransform();
+
+	auto Temp2 = BuildingMesh->GetComponentLocation();
+	Temp2.Y -= 0.80f;
+
+	auto Temp3 = BuildingMesh->GetComponentTransform();
+	Temp3.SetScale3D(static_cast<FVector>(0.7f, 0.7f, 0.5f));
+	
+	//HitCollider->DestroyComponent();
+	HitCollider->SetWorldTransform(Temp3);
+
+	BuildingMesh->SetStaticMesh(Asset);
+	BuildingMesh->SetWorldLocation(Temp2);
+	//BuildingMesh->GetComponentTransform();
+	BuildingMesh->SetMaterial(0, DeathMaterial);
 
 	GetWorldTimerManager().ClearTimer(Timer);
 
@@ -94,4 +132,12 @@ void ABaseFactory::OnDeath()
 	{
 		LevelTrigger->SetActive(true);
 	}
+
+	FTimerHandle TempTimer;
+	GetWorld()->GetTimerManager().SetTimer(TempTimer, this, &ABaseFactory::SelfDestruction, 20, false);
+}
+
+void ABaseFactory::SelfDestruction()
+{
+	Destroy();
 }
