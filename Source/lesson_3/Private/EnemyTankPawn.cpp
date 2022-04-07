@@ -34,6 +34,13 @@ AEnemyTankPawn::AEnemyTankPawn()/* : ATankPawn()*/
 	DeathEffect_Flame->SetupAttachment(BodyMesh);
 }
 
+void AEnemyTankPawn::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Experience = 100;
+}
+
 void AEnemyTankPawn::OnConstrution(const FTransform& Transform)
 {
 	Super::OnConstrution(Transform);
@@ -63,6 +70,26 @@ void AEnemyTankPawn::OnHealthChanged(float CurrentHealthTank)
 	GEngine->AddOnScreenDebugMessage(103456341, 3, FColor::Red, FString::Printf(TEXT("Health Enemy Tank: %f"), CurrentHealthTank));
 }
 
+void AEnemyTankPawn::SetupCannon(const TSubclassOf<ACannon>& CannonClass)
+{
+	if (Cannon)
+		Cannon->Destroy();
+
+	CannonType = CannonClass;
+
+	if (CannonType)
+	{
+		auto Transform = CannonPosition->GetComponentTransform();
+
+		Cannon = GetWorld()->SpawnActor<ACannon>(CannonType, Transform);
+
+		Cannon->TickInfo(false);
+
+		Cannon->AttachToComponent(CannonPosition, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		Cannon->OnExpEventCannon.AddUObject(this, &ATankPawn::TakeExp);
+	}
+}
+
 void AEnemyTankPawn::OnDeath()
 {
 	/*auto Temp = GetActorLocation();
@@ -75,11 +102,13 @@ void AEnemyTankPawn::OnDeath()
 	HealthComponent->OnDeath.Clear();
 
 	bDeath = true;
+	bDeath2 = true;
 	
 	TurretMesh->DestroyComponent();
-	CannonPosition->DestroyComponent();
+	//CannonPosition->DestroyComponent();
 	//CannonTracePosition->DestroyComponent();
 	//CannonFlamePosition1->DestroyComponent();
+	Cannon->Destroy();
 	TraceCannon->Destroy();
 	FlameCannon1->Destroy();
 	FlameCannon2->Destroy();

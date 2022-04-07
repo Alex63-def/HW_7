@@ -112,10 +112,14 @@ public:
 
 	void RechargeCannon();
 
+	void TickInfo(bool bTickInfo);
+
 	int Projectile{};
 	int Rocket{};
 	int QuantityEnemyTurret{};
 	int QuantityEnemyTank{};
+
+	bool bTickInfoCannon = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -139,6 +143,4 @@ private:
 	
 	bool bEmptyProjectile = false;
 	bool bEmptyRocket = false;
-
-
 };

@@ -38,10 +38,14 @@ public:
 	// сюда будут передаваться параметры при спавне танка из класса BaseFactory
 	virtual void OnConstrution(const FTransform& Transform) override;
 
+	virtual void SetupCannon(const TSubclassOf<ACannon>& CannonClass) override;
+
 	// это для примера, ни на что не влияет
 	int Number = -1;
 
-	bool bDeath = false;
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 private:
 

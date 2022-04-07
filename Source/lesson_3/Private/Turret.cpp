@@ -287,10 +287,13 @@ void ATurret::OnDeath()
 	DeathEffect->SetWorldLocation(Temp);
 	AudioDeathEffect->SetWorldLocation(Temp);*/
 
+	bDeath = true;
+
 	HealthComponent->OnDeath.Clear();
 
 	TurretMesh->DestroyComponent();
-	CannonPosition->DestroyComponent();
+	//CannonPosition->DestroyComponent();
+	Cannon->Destroy();
 	RangeSphere->DestroyComponent();
 	
 	BodyMesh->SetMaterial(0, DeathMaterial);

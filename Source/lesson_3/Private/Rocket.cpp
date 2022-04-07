@@ -64,8 +64,10 @@ void ARocket::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 
 	if (auto Unit = Cast<AUnitPawn>(OtherActor))
 	{
-		if (Unit->HealthComponent->GetHealthTurret() == 0)
+		if (Unit->bDeath)
 		{
+			Unit->bDeath = false;
+
 			FExpData ExpData;
 			ExpData.ExperienceValue = Unit->Experience;
 			ExpData.Enemy = OtherActor;
@@ -79,15 +81,20 @@ void ARocket::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 	}
 	else if (auto Unitt = Cast<ABaseFactory>(OtherActor))
 	{
-		FExpData ExpData;
-		ExpData.ExperienceValue = Unitt->Experience;
-		ExpData.Enemy = OtherActor;
+		if (Unitt->bDeath)
+		{
+			Unitt->bDeath = false;
 
-		if (OnExpEventRocket.IsBound())
-			OnExpEventRocket.Broadcast(ExpData);
+			FExpData ExpData;
+			ExpData.ExperienceValue = Unitt->Experience;
+			ExpData.Enemy = OtherActor;
 
-		if (OnKillEvent.IsBound())
-			OnKillEvent.Broadcast();
+			if (OnExpEventRocket.IsBound())
+				OnExpEventRocket.Broadcast(ExpData);
+
+			if (OnKillEvent.IsBound())
+				OnKillEvent.Broadcast();
+		}
 	}
 
 	AudioEffect->Stop();

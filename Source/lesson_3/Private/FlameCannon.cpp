@@ -75,8 +75,11 @@ void AFlameCannon::Shoot(float Value, float Overheat)
 						Target->TakeDamage(DamageData);
 					}
 				}
-				if (!Result.Actor.IsValid())
+				//if (!Result.Actor.IsValid())
+				if (Unit->bDeath)
 				{
+					Unit->bDeath = false;
+
 					FExpData ExpData;
 					ExpData.ExperienceValue = Unit->Experience;
 					ExpData.Enemy = Unit;
@@ -100,8 +103,11 @@ void AFlameCannon::Shoot(float Value, float Overheat)
 						Target->TakeDamage(DamageData);
 					}
 				}
-				if (!Result.Actor.IsValid())
+				//if (!Result.Actor.IsValid())
+				if (Unitt->bDeath)
 				{
+					Unitt->bDeath = false;
+
 					FExpData ExpData;
 					ExpData.ExperienceValue = Unitt->Experience;
 					ExpData.Enemy = Unitt;

@@ -211,6 +211,9 @@ public:
 
 	bool bMove = false;
 
+	bool bDeath = false;
+
+	bool bDeath2 = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire Params")
 		float TargetingSpeed = 0.1f;

@@ -103,10 +103,11 @@ private:
 
 	FTimerHandle Timer;
 
-	bool bDeath = false;
-
 public:
 
 	float Experience = 100;
+
+	bool bDeath = false;
+
 };
 

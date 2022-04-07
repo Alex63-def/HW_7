@@ -2,7 +2,6 @@
 
 
 #include "Cannon.h"
-#include "TankPawn.h"
 #include "DrawDebugHelpers.h"
 
 
@@ -51,10 +50,20 @@ void ACannon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	GEngine->AddOnScreenDebugMessage(3, 0.1, FColor::Blue, FString::Printf(TEXT("%f - %d / %d Projectile"), GetWorld()->GetTimerManager().GetTimerElapsed(TimerHandleShoot), Projectile, QuantityProjectile), false);
-	
-	GEngine->AddOnScreenDebugMessage(4, 0.1, FColor::Blue, FString::Printf(TEXT("%f - %d / %d Rocket"), GetWorld()->GetTimerManager().GetTimerElapsed(TimerHandleShoot), Rocket, QuantityRocket), false);
+	if (bTickInfoCannon)
+	{
+		if (Type == ECannonType::FireProjectile)
+			GEngine->AddOnScreenDebugMessage(3, 0.1, FColor::Blue, FString::Printf(TEXT("%f - %d / %d Projectile"), GetWorld()->GetTimerManager().GetTimerElapsed(TimerHandleShoot), Projectile, QuantityProjectile), false);
+		else
+			GEngine->AddOnScreenDebugMessage(3, 0.1, FColor::Blue, FString::Printf(TEXT("%f - %d / %d Rocket"), GetWorld()->GetTimerManager().GetTimerElapsed(TimerHandleShoot), Rocket, QuantityRocket), false);
+	}
 }
+
+void ACannon::TickInfo(bool bTickInfo)
+{
+	bTickInfoCannon = bTickInfo;
+}
+
 
 void ACannon::Shoot()
 {

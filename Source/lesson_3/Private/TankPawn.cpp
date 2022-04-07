@@ -114,7 +114,15 @@ void ATankPawn::Destroyed()
 	if (Cannon)
 	{
 		Cannon->Destroy();
+	}
+
+	if (TraceCannon)
+	{
 		TraceCannon->Destroy();
+	}
+
+	if (FlameCannon1 && FlameCannon2)
+	{
 		FlameCannon1->Destroy();
 		FlameCannon2->Destroy();
 	}
@@ -354,6 +362,8 @@ void ATankPawn::SetupCannon(const TSubclassOf<ACannon>& CannonClass)
 		auto Transform = CannonPosition->GetComponentTransform(); 
 
 		Cannon = GetWorld()->SpawnActor<ACannon>(CannonType, Transform);
+
+		Cannon->TickInfo(true);
 
 		Cannon->AttachToComponent(CannonPosition, FAttachmentTransformRules::SnapToTargetIncludingScale); 
 		Cannon->OnExpEventCannon.AddUObject(this, &ATankPawn::TakeExp);
