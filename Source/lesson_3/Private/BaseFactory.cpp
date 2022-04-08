@@ -62,7 +62,7 @@ void ABaseFactory::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!AudioEffect_1->IsActive() && !bDeath)
+	if (!AudioEffect_1->IsActive() && !bDeath2)
 		AudioEffect_1->Play();
 }
 
@@ -104,6 +104,8 @@ void ABaseFactory::OnDeath()
 	HealthComponent->OnDeath.Clear();
 
 	bDeath = true;
+	bDeath2 = true;
+
 	AudioEffect_1->Stop();
 	AudioEffect_2->Play();
 	AudioEffect_3->Play();

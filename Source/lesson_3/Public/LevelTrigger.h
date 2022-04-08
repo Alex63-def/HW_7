@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/BoxComponent.h"
-//#include "Components/PointLightComponent.h" // это будет освещать все, поэтому поменяли
+#include "Components/PointLightComponent.h" // это будет освещать все, поэтому поменяли
 #include "Components/SpotLightComponent.h" // а это будет освещать только определенныую область
+#include "Particles/ParticleSystemComponent.h" // для визуального эффекта
+#include "Components/AudioComponent.h" // для звука
 #include "LevelTrigger.generated.h"
 
 UCLASS()
@@ -27,6 +29,15 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
 		USpotLightComponent* ActiveLight;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Component")
+		UPointLightComponent* PointActiveLight;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UParticleSystemComponent* VisualEffect;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UAudioComponent* AudioEffect;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Level")
 		bool IsActive = false;
@@ -51,4 +62,5 @@ private:
 	UFUNCTION()
 		void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	bool bActiveAudio = false;
 };

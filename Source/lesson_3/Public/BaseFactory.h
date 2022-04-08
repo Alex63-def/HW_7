@@ -108,6 +108,6 @@ public:
 	float Experience = 100;
 
 	bool bDeath = false;
-
+	bool bDeath2 = false;
 };
 

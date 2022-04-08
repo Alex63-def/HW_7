@@ -19,6 +19,15 @@ ALevelTrigger::ALevelTrigger()
 
 	ActiveLight = CreateDefaultSubobject<USpotLightComponent>("ActiveLight");
 	ActiveLight->SetupAttachment(RootComponent);
+
+	PointActiveLight = CreateDefaultSubobject<UPointLightComponent>("PointActiveLight");
+	PointActiveLight->SetupAttachment(RootComponent);
+
+	AudioEffect = CreateDefaultSubobject<UAudioComponent>("AudioEffect");
+	AudioEffect->SetupAttachment(RootComponent);
+
+	VisualEffect = CreateDefaultSubobject<UParticleSystemComponent>("VisualEffect");
+	VisualEffect->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -26,12 +35,21 @@ void ALevelTrigger::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	VisualEffect->ActivateSystem();
+	PointActiveLight->Activate();
 }
 
 // Called every frame
 void ALevelTrigger::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	
+	if (bActiveAudio)
+	{
+		AudioEffect->Play();
+		bActiveAudio = false;
+	}
 
 }
 
@@ -51,4 +69,5 @@ void ALevelTrigger::SetActive(bool Active)
 	InactiveLight->SetHiddenInGame(Active); // пр€чем неактивный свет если активно
 	ActiveLight->SetHiddenInGame(!Active);	// и пр€чем активный свет если неактивно
 	IsActive = Active;
+	bActiveAudio = Active;
 }
