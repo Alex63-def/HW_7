@@ -42,12 +42,18 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Level")
 		bool IsActive = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AllEnemy")
+		bool bAllEnemyDestroyed = false;
+
 	// имя уровня
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level")
 		FName LevelName;
 
 	// чтобы менять цвет света
 	void SetActive(bool Active);
+
+	// отслеживает кол-во врагов в мире
+	void FindEnemy();
 
 protected:
 	// Called when the game starts or when spawned
@@ -63,4 +69,6 @@ private:
 		void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	bool bActiveAudio = false;
+
+	uint32 Quantity = 0;
 };

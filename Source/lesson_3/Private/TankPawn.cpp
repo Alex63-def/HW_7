@@ -408,7 +408,10 @@ void ATankPawn::ChargingStation()
 {
 	if (Energy != QuantityEnergy)
 	{
-		++Energy;
+		Energy += 100;
+
+		if (Energy > QuantityEnergy)
+			Energy = QuantityEnergy;
 	}
 }
 

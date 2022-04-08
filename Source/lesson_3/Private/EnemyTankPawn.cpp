@@ -46,7 +46,7 @@ void AEnemyTankPawn::OnConstrution(const FTransform& Transform)
 	Super::OnConstrution(Transform);
 
 	// это для примера выводим сколько танков спавнилось
-	GEngine->AddOnScreenDebugMessage(-1, 10, FColor::Red, FString::Printf(TEXT("%d - Tank created"), Number));
+	GEngine->AddOnScreenDebugMessage(987457, 3, FColor::Red, FString::Printf(TEXT("%d - Tank created"), Number));
 }
 
 void AEnemyTankPawn::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -121,6 +121,12 @@ void AEnemyTankPawn::OnDeath()
 	DeathEffectt->ActivateSystem();
 	AudioEffect_FlameDeath->Play();
 	DeathEffect_Flame->ActivateSystem();
+
+	// активируем триггер
+	if (LevelTrigger)
+	{
+		LevelTrigger->SetActive(true);
+	}
 
 	GetWorld()->GetTimerManager().SetTimer(TimerDestruction, this, &AEnemyTankPawn::SelfDestruction, 20, false);
 }

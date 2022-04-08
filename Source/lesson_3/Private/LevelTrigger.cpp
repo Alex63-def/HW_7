@@ -3,6 +3,8 @@
 
 #include "LevelTrigger.h"
 #include "Kismet/GameplayStatics.h"
+#include "UnitPawn.h"
+#include "BaseFactory.h"
 
 // Sets default values
 ALevelTrigger::ALevelTrigger()
@@ -37,13 +39,29 @@ void ALevelTrigger::BeginPlay()
 	
 	VisualEffect->ActivateSystem();
 	PointActiveLight->Activate();
+
+	/*TArray<AActor*> ActorsEnemy;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnitPawn::StaticClass(), ActorsEnemy);
+
+	TArray<AActor*> ActorsFactory;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseFactory::StaticClass(), ActorsFactory);
+
+	AActor* TempActor;
+	for (auto Actor : ActorsEnemy)
+	{
+		if (Actor == GetWorld()->GetFirstPlayerController()->GetPawn())
+			TempActor = Actor;
+	}
+	ActorsEnemy.Remove(TempActor);
+
+	Quantity += (ActorsEnemy.GetTypeSize() + ActorsFactory.GetTypeSize()) / 4;
+	GEngine->AddOnScreenDebugMessage(425623, 123, FColor::Blue, FString::Printf(TEXT("%d"), Quantity), false);*/
 }
 
 // Called every frame
 void ALevelTrigger::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	
 	if (bActiveAudio)
 	{
@@ -51,16 +69,44 @@ void ALevelTrigger::Tick(float DeltaTime)
 		bActiveAudio = false;
 	}
 
+	FindEnemy();
+
+	if (bAllEnemyDestroyed)
+		if(Quantity == 0)
+			SetActive(true);
+}
+
+void ALevelTrigger::FindEnemy()
+{
+	TArray<AActor*> ActorsEnemy;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AUnitPawn::StaticClass(), ActorsEnemy);
+
+	TArray<AActor*> ActorsFactory;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseFactory::StaticClass(), ActorsFactory);
+
+	AActor* TempActor;
+	for (auto Actor : ActorsEnemy)
+	{
+		if (Actor == GetWorld()->GetFirstPlayerController()->GetPawn())
+			TempActor = Actor;
+	}
+	ActorsEnemy.Remove(TempActor);
+
+	Quantity = ActorsEnemy.Num() + ActorsFactory.Num();
+	//GEngine->AddOnScreenDebugMessage(425623, 123, FColor::Blue, FString::Printf(TEXT("%d"), Quantity), false);
 }
 
 // переводит нас на новый уровень
 void ALevelTrigger::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (IsActive && !LevelName.IsNone()) // если активен тригер и задано имя
+	if (IsActive /*&& !LevelName.IsNone()*/) // если активен тригер и задано имя
 	{
 		APawn* PlayerPawn = GetWorld()->GetFirstPlayerController()->GetPawn(); // это получение игрока
 		if (OtherActor == PlayerPawn) // если заехал игрок - запустить
-			UGameplayStatics::OpenLevel(this, LevelName);
+			if(!LevelName.IsNone())
+				UGameplayStatics::OpenLevel(this, LevelName);
+			else
+				UKismetSystemLibrary::QuitGame(GetWorld(), GetWorld()->GetFirstPlayerController(), EQuitPreference::Quit, true);
 	}
 }
 

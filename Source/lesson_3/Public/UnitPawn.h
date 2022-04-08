@@ -16,6 +16,7 @@
 #include "HealthComponent.h"
 #include "DamageTarget.h"
 #include "IScorable.h"
+#include "LevelTrigger.h"
 #include "UnitPawn.generated.h"
 
 UCLASS(Abstract)
@@ -87,6 +88,10 @@ public:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UAudioComponent* AudioDeathEffect;
+
+	// активируем переход на левел если враг убит
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Factory")
+		ALevelTrigger* LevelTrigger;
 
 	UPROPERTY()
 		ACannon* Cannon;

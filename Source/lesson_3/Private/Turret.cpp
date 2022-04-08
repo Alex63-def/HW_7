@@ -303,6 +303,12 @@ void ATurret::OnDeath()
 	AudioEffect_FlameDeath->Play();
 	DeathEffect_Flame->ActivateSystem();
 
+	// активируем триггер
+	if (LevelTrigger)
+	{
+		LevelTrigger->SetActive(true);
+	}
+
 	GetWorld()->GetTimerManager().SetTimer(TimerDestruction, this, &ATurret::SelfDestruction, 20, false);	
 }
 
